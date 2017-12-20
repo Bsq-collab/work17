@@ -13,7 +13,6 @@
   =========================*/
 int server_setup() {
   int from_client;
-  int ss;
   char buffer[HANDSHAKE_BUFFER_SIZE];
 
   mkfifo("luigi", 0600);
@@ -23,10 +22,6 @@ int server_setup() {
   from_client = open( "luigi", O_RDONLY, 0);
   read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake: received [%s]\n", buffer);
-  ss=fork();
-  if(!ss){
-    return from_client;
-  }
   remove("luigi");
   printf("[server] handshake: removed wkp\n");
   return from_client;

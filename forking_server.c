@@ -12,12 +12,12 @@ static void sighandler(int signo) {
 }
 
 int main() {
+  signal(SIGINT,sighandler);
   int from_client;
-  int ppid;
-  ppid=getpid();
   while(1){
     from_client=server_setup();
-    if(getpid()!= ppid){//not parent pid.
+    int f=fork();
+    if(!f){
       subserver(from_client);//calls subserver because it's not the parent...
     }
   }
@@ -33,6 +33,7 @@ void subserver(int from_client) {
     write(to_client,buffer,sizeof(buffer));//writes back to client
     printf("write to client");
   }
+  exit(0);
 }
 
 void process(char * s) {

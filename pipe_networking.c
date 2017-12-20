@@ -12,9 +12,8 @@
   returns the file descriptor for the upstream pipe.
   =========================*/
 int server_setup() {
-
   int from_client;
-
+  int ss;
   char buffer[HANDSHAKE_BUFFER_SIZE];
 
   mkfifo("luigi", 0600);
@@ -24,9 +23,13 @@ int server_setup() {
   from_client = open( "luigi", O_RDONLY, 0);
   read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake: received [%s]\n", buffer);
+  ss=fork();
+  if(!ss){
+    return from_client;
+  }
   remove("luigi");
+  printf("[server] handshake: removed wkp\n");
   return from_client;
-
 }
 
 
@@ -41,16 +44,14 @@ int server_setup() {
 int server_connect(int from_client) {
   char buffer[HANDSHAKE_BUFFER_SIZE];
   int to_client;
-  from_client=server_setup();
-
-
-  remove("luigi");
-  printf("[server] handshake: removed wkp\n");
-
+  //read from WKP first.
+  read(from_client,buffer,sizeof(buffer));
+  printf("server_connect read from wkp\n");
   //connect to client, send message
+  printf("opening private pipe...\n");
   to_client = open(buffer, O_WRONLY, 0);
+  printf("sending message....\n");
   write(to_client, buffer, sizeof(buffer));
-
   //read for client
   read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake received: %s\n", buffer);

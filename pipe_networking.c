@@ -20,7 +20,6 @@ int server_setup() {
   //block on open, recieve mesage
   printf("[server] handshake: making wkp\n");
   from_client = open( "luigi", O_RDONLY, 0);
-  read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake: received [%s]\n", buffer);
   remove("luigi");
   printf("[server] handshake: removed wkp\n");
